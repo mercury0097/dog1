@@ -7,7 +7,11 @@
 
 static const char *TAG = "PalqiqiMovements";
 
-#define HAND_HOME_POSITION 170 // 左手放下位置（右手为 180-170=10）
+#define HAND_HOME_POSITION 170  // 左手放下位置（右手为 180-170=10）
+#define LEFT_LEG_HOME  95       // 左腿初始角度
+#define RIGHT_LEG_HOME 90       // 右腿初始角度
+#define LEFT_FOOT_HOME 85       // 左脚初始角度
+#define RIGHT_FOOT_HOME 90      // 右脚初始角度
 
 // 三次贝塞尔 S 型曲线查找表（33 个点，0.0 到 1.0）
 // 控制点: P0=(0,0), P1=(0.25,0), P2=(0.75,1), P3=(1,1)
@@ -375,8 +379,15 @@ void Palqiqi::Home(bool hands_down) {
           // 如果不需要复位手部，保持当前位置
           homes[i] = servo_[i].GetPosition();
         }
+      } else if (i == LEFT_LEG) {
+        homes[i] = LEFT_LEG_HOME;
+      } else if (i == RIGHT_LEG) {
+        homes[i] = RIGHT_LEG_HOME;
+      } else if (i == LEFT_FOOT) {
+        homes[i] = LEFT_FOOT_HOME;
+      } else if (i == RIGHT_FOOT) {
+        homes[i] = RIGHT_FOOT_HOME;
       } else {
-        // 腿部和脚部舵机始终复位
         homes[i] = 90;
       }
     }
@@ -404,7 +415,7 @@ void Palqiqi::SetRestState(bool state) { is_palqiqi_resting_ = state; }
 //---------------------------------------------------------
 void Palqiqi::Jump(float steps, int period) {
   int homes[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
   
   // 阶段1: 准备蓄力（下蹲）- 使用 EASE_IN_OUT 平滑下蹲，30%时间
   int crouch[SERVO_COUNT] = {
@@ -413,7 +424,7 @@ void Palqiqi::Jump(float steps, int period) {
   
   // 阶段2: 上跳（有力但不急）- 使用 EASE_OUT，15%时间
   int up[SERVO_COUNT] = {
-      90, 90, 150, 30, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      90, 90, 140, 40, HAND_HOME_POSITION, HAND_HOME_POSITION};
   MoveServosWithEase(period * 0.15, up, EASE_OUT);
   
   // 阶段3: 滞空（保持一会儿）- 10%时间
@@ -539,7 +550,7 @@ void Palqiqi::Bend(int steps, int period, int dir) {
   int bend2[SERVO_COUNT] = {
       90, 90, 62, 145, HAND_HOME_POSITION, HAND_HOME_POSITION};
   int homes[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
 
   // Changes in the parameters if right direction is chosen
   // 向右弯腰：左脚向内抬起(>90)，右脚向内支撑(<90)
@@ -583,39 +594,43 @@ void Palqiqi::ShakeLeg(int steps, int period, int dir) {
   // 默认: 右腿抖动 (dir=-1)
   // [2]=左脚(支撑), [3]=右脚(抬起抖动)
   int shake_leg1[SERVO_COUNT] = {
-      90, 90, 70, 50, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      90, 90, 60, 50, HAND_HOME_POSITION, HAND_HOME_POSITION};
   int shake_leg2[SERVO_COUNT] = {
-      90, 90, 70, 110, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      90, 90, 60, 130, HAND_HOME_POSITION, HAND_HOME_POSITION};
   int shake_leg3[SERVO_COUNT] = {
-      90, 90, 70, 80, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      90, 90, 60, 100, HAND_HOME_POSITION, HAND_HOME_POSITION};
   int homes[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
 
   // 左腿抖动 (dir=1): 左脚抬起抖动，右脚支撑
   // 左脚方向反转 (180-x)，右脚支撑保持原方向
   if (dir == 1) {
-    shake_leg1[2] = 180 - 130;  // 左脚抬起准备
-    shake_leg1[3] = 110;        // 右脚支撑（不反转）
-    shake_leg2[2] = 180 - 70;   // 左脚抬高
-    shake_leg2[3] = 110;        // 右脚保持支撑
-    shake_leg3[2] = 180 - 100;  // 左脚抖动位置
-    shake_leg3[3] = 110;        // 右脚保持支撑
+    shake_leg1[2] = 130;  // 左脚抬起准备
+    shake_leg1[3] = 120;         // 右脚支撑
+    shake_leg2[2] = 50;   // 左脚抬高
+    shake_leg2[3] = 120;         // 右脚保持支撑
+    shake_leg3[2] = 80;  // 左脚抖动位置
+    shake_leg3[3] = 120;         // 右脚保持支撑
   }
 
-  int T2 = 1500;
+  int T2 = 2000;
   period = period - T2;
   period = (period > 400 * numberLegMoves) ? period : (400 * numberLegMoves);
 
   for (int j = 0; j < steps; j++) {
-    MoveServos(T2 / 2, shake_leg1);
-    MoveServos(T2 / 2, shake_leg2);
+    // 阶段1: 慢慢移重心到支撑脚（两头都慢）
+    MoveServosWithEase(T2 / 2, shake_leg1, EASE_IN_OUT);
+    // 等待重心稳定
+    vTaskDelay(pdMS_TO_TICKS(300));
+    // 阶段2: 抬起抖动脚（两头都慢）
+    MoveServosWithEase(T2 / 2, shake_leg2, EASE_IN_OUT);
 
     for (int i = 0; i < numberLegMoves; i++) {
       MoveServos(period / (2 * numberLegMoves), shake_leg3);
       MoveServos(period / (2 * numberLegMoves), shake_leg2);
     }
     // 回位时间延长到1500ms，使用平滑过渡，避免重心不稳
-    MoveServosWithEase(1500, homes, EASE_IN_OUT);
+    MoveServosWithEase(2000, homes, EASE_IN_OUT);
   }
 
   vTaskDelay(pdMS_TO_TICKS(200));
@@ -634,7 +649,7 @@ void Palqiqi::ShakeLeg(int steps, int period, int dir) {
 void Palqiqi::LookAround(int period, int dir) {
   // [0]=左腿, [1]=右腿, [2]=左脚, [3]=右脚
   int homes[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
 
   // 腿部旋转角度（髋关节）
   int leg_turn = 25;  // 旋转25度（加大幅度）
@@ -886,9 +901,9 @@ void Palqiqi::HandsUp(int period, int dir) {
   }
 
   int initial[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
   int target[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
 
   // 左手抬起：45度（小角度=抬起）
   // 右手抬起：45度（修正：右手安装方向相反，小角度=抬起）
@@ -921,7 +936,7 @@ void Palqiqi::HandsDown(int period, int dir) {
   // 左手放下：HAND_HOME_POSITION (170度，大角度=放下)
   // 右手放下：HAND_HOME_POSITION (170度，修正：右手安装方向相反，大角度=放下)
   int target[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
 
   if (dir == 1) {
     target[RIGHT_HAND] = servo_[RIGHT_HAND].GetPosition();
@@ -1209,7 +1224,7 @@ void Palqiqi::JumpBounce(int period) {
 
   // 落地（带弹跳）
   int down[SERVO_COUNT] = {
-      90, 90, 90, 90, HAND_HOME_POSITION, HAND_HOME_POSITION};
+      LEFT_LEG_HOME, RIGHT_LEG_HOME, LEFT_FOOT_HOME, RIGHT_FOOT_HOME, HAND_HOME_POSITION, HAND_HOME_POSITION};
   MoveServosWithEase(period / 2, down, EASE_OUT_BOUNCE);
 }
 

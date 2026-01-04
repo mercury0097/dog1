@@ -225,9 +225,10 @@ int NoAudioCodec::Write(const int16_t* data, int samples) {
         // 使用平方曲线，符合人耳对响度的感知特性
         volume_scale = pow(volume_scale, 2.0);
 
-        // 额外衰减系数，补偿硬件功放最大增益（MAX98357A GAIN=18dB）
-        // 0.18 ≈ 18% 输出，可根据实际效果调整（建议范围：0.15-0.25）
-        volume_scale *= 0.18;
+        // 软件增益系数（可根据实际喇叭效果调整）
+        // 0.18 = 较小音量（防失真），0.5 = 中等，1.0 = 最大
+        // 如果音量还是小，可以尝试 1.5 或 2.0（可能会有轻微失真）
+        volume_scale *= 0.8;
     }
 
     const double max_val = static_cast<double>(INT32_MAX);
@@ -474,7 +475,8 @@ int NoAudioCodecSimplexAec::Write(const int16_t* data, int samples) {
     double volume_scale = static_cast<double>(output_volume_) / 100.0;
     if (volume_scale > 0.0) {
         volume_scale = pow(volume_scale, 2.0);
-        volume_scale *= 0.18;
+        // 软件增益系数，与 NoAudioCodec::Write 保持一致
+        volume_scale *= 0.8;
     }
 
     const double max_val = static_cast<double>(INT32_MAX);

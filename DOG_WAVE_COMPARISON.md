@@ -269,3 +269,4 @@ void Dog::MoveSingleServoWithEase(int servo_index, int target_position,
 
 **总结：** 通过精确控制只移动需要移动的舵机，完全消除了不必要的抖动，同时提升了代码质量和性能。
 
+

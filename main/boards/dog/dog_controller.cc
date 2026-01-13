@@ -127,8 +127,8 @@ private:
 
 public:
   DogController() {
-    // Init参数顺序: left_rear_leg, left_front_leg, right_front_leg, right_rear_leg
-    dog_.Init(LEFT_REAR_LEG_PIN, LEFT_FRONT_LEG_PIN, RIGHT_FRONT_LEG_PIN,
+    // Init参数顺序: left_front_leg, left_rear_leg, right_front_leg, right_rear_leg
+    dog_.Init(LEFT_FRONT_LEG_PIN, LEFT_REAR_LEG_PIN, RIGHT_FRONT_LEG_PIN,
               RIGHT_REAR_LEG_PIN);
     ESP_LOGI(TAG, "Dog机器人初始化");
     action_queue_ = xQueueCreate(10, sizeof(DogActionParams));

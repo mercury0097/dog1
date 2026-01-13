@@ -22,10 +22,10 @@
 #define SERVO_LIMIT_DEFAULT 240
 
 // -- Servo indexes for easy access (四足小狗)
-#define LEFT_REAR_LEG 0   // 左后腿（原palqiqi左腿）
-#define LEFT_FRONT_LEG 1  // 左前腿（原palqiqi左脚）
-#define RIGHT_FRONT_LEG 2 // 右前腿（原palqiqi右腿）
-#define RIGHT_REAR_LEG 3  // 右后腿（原palqiqi右脚）
+#define LEFT_FRONT_LEG 0  // 左前腿 - GPIO 39
+#define LEFT_REAR_LEG 1   // 左后腿 - GPIO 38
+#define RIGHT_FRONT_LEG 2 // 右前腿 - GPIO 17
+#define RIGHT_REAR_LEG 3  // 右后腿 - GPIO 18
 #define SERVO_COUNT 4
 
 // 预定义的运动曲线类型
@@ -56,14 +56,14 @@ public:
   ~Dog();
 
   //-- Dog initialization
-  void Init(int left_rear_leg, int left_front_leg, int right_front_leg, int right_rear_leg);
+  void Init(int left_front_leg, int left_rear_leg, int right_front_leg, int right_rear_leg);
   
   //-- Attach & detach functions
   void AttachServos();
   void DetachServos();
 
   //-- Oscillator Trims
-  void SetTrims(int left_rear_leg, int left_front_leg, int right_front_leg, int right_rear_leg);
+  void SetTrims(int left_front_leg, int left_rear_leg, int right_front_leg, int right_rear_leg);
 
   //-- Predetermined Motion Functions
   void MoveServos(int time, int servo_target[]);

@@ -110,3 +110,4 @@ echo "   4. 选择 ESP-IDF 路径: $HOME/Desktop/esp-5.51/v5.5.1/esp-idf"
 echo "   5. 选择 Tools 路径: $HOME/.espressif"
 echo ""
 
+

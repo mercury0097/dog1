@@ -9,10 +9,10 @@
 
 // 桌面小狗舵机定义
 // 注意：舵机转轴平行于地面，脚可以垂直地面前后运动
-#define LEFT_REAR_LEG_PIN GPIO_NUM_39   // 左后腿（原palqiqi左腿）
-#define LEFT_FRONT_LEG_PIN GPIO_NUM_38  // 左前腿（原palqiqi左脚）
-#define RIGHT_FRONT_LEG_PIN GPIO_NUM_17 // 右前腿（原palqiqi右腿）
-#define RIGHT_REAR_LEG_PIN GPIO_NUM_18  // 右后腿（原palqiqi右脚）
+#define LEFT_FRONT_LEG_PIN GPIO_NUM_39  // 左前腿
+#define LEFT_REAR_LEG_PIN GPIO_NUM_38   // 左后腿
+#define RIGHT_FRONT_LEG_PIN GPIO_NUM_17 // 右前腿
+#define RIGHT_REAR_LEG_PIN GPIO_NUM_18  // 右后腿
 
 #define AUDIO_INPUT_SAMPLE_RATE 16000
 #define AUDIO_OUTPUT_SAMPLE_RATE 16000 // 16kHz避免重采样，音质更好
@@ -50,6 +50,7 @@
 #define DOG_VERSION "1.0.0"
 
 #endif // _BOARD_CONFIG_H_
+
 
 
 

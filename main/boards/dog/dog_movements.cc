@@ -485,6 +485,96 @@ void Dog::WalkBackward(float steps, int period, int amount) {
 }
 
 //--------------------------------------------------------------
+//-- Dog前后摇摆动作 - 四腿同步前后摆动
+//--------------------------------------------------------------
+void Dog::SwayBackForth(int steps, int period, int amount) {
+  ESP_LOGI(TAG, "前后摇摆: steps=%d, period=%d, amount=%d", steps, period, amount);
+
+  AttachServos();
+  if (GetRestState() == true) {
+    SetRestState(false);
+  }
+
+  int half_time = period / 2;
+  int neutral = 90;
+
+  // 左侧腿：角度增大=向前，角度减小=向后
+  int left_forward = neutral + amount;
+  int left_backward = neutral - amount;
+
+  // 右侧腿：角度减小=向前，角度增大=向后（镜像安装）
+  int right_forward = neutral - amount;
+  int right_backward = neutral + amount;
+
+  for (int i = 0; i < steps; i++) {
+    int target_back[SERVO_COUNT] = {
+      left_backward,  // 左后腿
+      left_backward,  // 左前腿
+      right_backward, // 右前腿
+      right_backward  // 右后腿
+    };
+    MoveServosWithEase(half_time, target_back, EASE_IN_OUT);
+
+    int target_forward[SERVO_COUNT] = {
+      left_forward,  // 左后腿
+      left_forward,  // 左前腿
+      right_forward, // 右前腿
+      right_forward  // 右后腿
+    };
+    MoveServosWithEase(half_time, target_forward, EASE_IN_OUT);
+
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+
+  // 注意: Home()由controller统一调用,这里不调用
+}
+
+//--------------------------------------------------------------
+//-- Dog俯卧撑动作 - 前腿前后摆动，后腿保持中立
+//--------------------------------------------------------------
+void Dog::PushUp(int steps, int period, int amount) {
+  ESP_LOGI(TAG, "俯卧撑: steps=%d, period=%d, amount=%d", steps, period, amount);
+
+  AttachServos();
+  if (GetRestState() == true) {
+    SetRestState(false);
+  }
+
+  int half_time = period / 2;
+  int neutral = 90;
+
+  int push_amount = amount * 2;
+
+  // 左侧腿：角度增大=向前，角度减小=向后
+  int left_forward = neutral + push_amount;
+
+  // 右侧腿：角度减小=向前，角度增大=向后（镜像安装）
+  int right_forward = neutral - push_amount;
+
+  for (int i = 0; i < steps; i++) {
+    int target_forward[SERVO_COUNT] = {
+      left_forward,  // 左前腿向前
+      neutral,       // 左后腿保持中立
+      neutral,       // 右后腿保持中立
+      right_forward  // 右前腿向前
+    };
+    MoveServosWithEase(half_time, target_forward, EASE_IN_OUT);
+
+    int target_neutral[SERVO_COUNT] = {
+      neutral, // 左后腿中立
+      neutral, // 左前腿中立
+      neutral, // 右前腿中立
+      neutral  // 右后腿中立
+    };
+    MoveServosWithEase(half_time, target_neutral, EASE_IN_OUT);
+
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+
+  // 注意: Home()由controller统一调用,这里不调用
+}
+
+//--------------------------------------------------------------
 //-- Dog右转动作 - 原左转的逆序（4-3-2-1）
 //--------------------------------------------------------------
 void Dog::TurnRight(float steps, int period, int amount) {

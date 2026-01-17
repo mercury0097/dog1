@@ -94,6 +94,22 @@ public:
   void WalkBackward(float steps = 8, int period = 1000, int amount = 30);
 
   /**
+   * 前后摇摆 - 四条腿同时前后摆动
+   * @param steps 摇摆次数
+   * @param period 每次摇摆周期（毫秒）
+   * @param amount 摆动幅度
+   */
+  void SwayBackForth(int steps = 5, int period = 1000, int amount = 30);
+
+  /**
+   * 俯卧撑 - 前腿同时向前后摆动，后腿保持中立
+   * @param steps 次数
+   * @param period 每次周期（毫秒）
+   * @param amount 摆动幅度
+   */
+  void PushUp(int steps = 4, int period = 1000, int amount = 30);
+
+  /**
    * 右转动作 - 四步对角线步态
    * @param steps 步数
    * @param period 每步周期（毫秒）
@@ -143,4 +159,3 @@ private:
 };
 
 #endif // __DOG_MOVEMENTS_H__
-

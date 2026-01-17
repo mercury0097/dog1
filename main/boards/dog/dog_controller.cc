@@ -27,7 +27,9 @@ enum ActionType {
   ACTION_HOME = 3,
   ACTION_TURN_RIGHT = 4,
   ACTION_TURN_LEFT = 5,
-  ACTION_SAY_HELLO = 6
+  ACTION_SAY_HELLO = 6,
+  ACTION_SWAY_BACK_FORTH = 7,
+  ACTION_PUSH_UP = 8
 };
 
 class DogController {
@@ -64,6 +66,12 @@ private:
           break;
         case ACTION_SAY_HELLO:
           controller->dog_.SayHello((int)params.steps, params.speed, params.amount);
+          break;
+        case ACTION_SWAY_BACK_FORTH:
+          controller->dog_.SwayBackForth((int)params.steps, params.speed, params.amount);
+          break;
+        case ACTION_PUSH_UP:
+          controller->dog_.PushUp((int)params.steps, params.speed, params.amount);
           break;
         case ACTION_HOME:
           controller->dog_.Home();
@@ -216,6 +224,36 @@ public:
           int speed = properties["speed"].value<int>();
           int amount = properties["amount"].value<int>();
           QueueAction(ACTION_SAY_HELLO, wave_times, speed, 0, amount);
+          return "OK";
+        });
+
+    mcp_server.AddTool(
+        "self.dog.sway_back_forth", "前后摇摆",
+        PropertyList({
+            Property("steps", kPropertyTypeInteger, 5),
+            Property("speed", kPropertyTypeInteger, 1000),
+            Property("amount", kPropertyTypeInteger, 30),
+        }),
+        [this](const PropertyList &properties) -> ReturnValue {
+          int steps = properties["steps"].value<int>();
+          int speed = properties["speed"].value<int>();
+          int amount = properties["amount"].value<int>();
+          QueueAction(ACTION_SWAY_BACK_FORTH, steps, speed, 0, amount);
+          return "OK";
+        });
+
+    mcp_server.AddTool(
+        "self.dog.push_up", "俯卧撑",
+        PropertyList({
+            Property("steps", kPropertyTypeInteger, 4),
+            Property("speed", kPropertyTypeInteger, 1000),
+            Property("amount", kPropertyTypeInteger, 30),
+        }),
+        [this](const PropertyList &properties) -> ReturnValue {
+          int steps = properties["steps"].value<int>();
+          int speed = properties["speed"].value<int>();
+          int amount = properties["amount"].value<int>();
+          QueueAction(ACTION_PUSH_UP, steps, speed, 0, amount);
           return "OK";
         });
 

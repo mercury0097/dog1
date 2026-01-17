@@ -56,14 +56,14 @@ public:
   ~Dog();
 
   //-- Dog initialization
-  void Init(int left_front_leg, int left_rear_leg, int right_front_leg, int right_rear_leg);
+  void Init(int left_rear_leg, int left_front_leg, int right_front_leg, int right_rear_leg);
   
   //-- Attach & detach functions
   void AttachServos();
   void DetachServos();
 
   //-- Oscillator Trims
-  void SetTrims(int left_front_leg, int left_rear_leg, int right_front_leg, int right_rear_leg);
+  void SetTrims(int left_rear_leg, int left_front_leg, int right_front_leg, int right_rear_leg);
 
   //-- Predetermined Motion Functions
   void MoveServos(int time, int servo_target[]);

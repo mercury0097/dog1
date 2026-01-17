@@ -360,6 +360,12 @@ void PalqiqiVectorEyeDisplay::SetChatMessage(const char *role,
   if (chat_message_label_ == nullptr)
     return;
 
+  if (!subtitles_visible_) {
+    lv_label_set_text(chat_message_label_, content == nullptr ? "" : content);
+    lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+    return;
+  }
+
   if (content == nullptr || strlen(content) == 0) {
     lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
     return;
@@ -398,4 +404,21 @@ void PalqiqiVectorEyeDisplay::SetTheme(Theme *theme) {
   Display::SetTheme(theme);
 
   ESP_LOGI(TAG, "矢量眼睛模式：跳过主题UI更新");
+}
+
+void PalqiqiVectorEyeDisplay::SetStatusBarVisible(bool visible) {
+  SpiLcdDisplay::SetStatusBarVisible(visible);
+}
+
+void PalqiqiVectorEyeDisplay::SetSubtitlesVisible(bool visible) {
+  Display::SetSubtitlesVisible(visible);
+  if (chat_message_label_ == nullptr) {
+    return;
+  }
+  DisplayLockGuard lock(static_cast<Display *>(this));
+  if (visible) {
+    lv_obj_remove_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+  } else {
+    lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+  }
 }

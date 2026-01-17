@@ -120,15 +120,15 @@ private:
     int right_front_leg = settings.GetInt("right_front_leg", 0);
     int left_rear_leg = settings.GetInt("left_rear_leg", 0);
     int right_rear_leg = settings.GetInt("right_rear_leg", 0);
-    dog_.SetTrims(left_front_leg, right_front_leg, left_rear_leg, right_rear_leg);
+    dog_.SetTrims(left_rear_leg, left_front_leg, right_front_leg, right_rear_leg);
     ESP_LOGI(TAG, "加载舵机微调值: LF=%d, RF=%d, LR=%d, RR=%d",
              left_front_leg, right_front_leg, left_rear_leg, right_rear_leg);
   }
 
 public:
   DogController() {
-    // Init参数顺序: left_front_leg, left_rear_leg, right_front_leg, right_rear_leg
-    dog_.Init(LEFT_FRONT_LEG_PIN, LEFT_REAR_LEG_PIN, RIGHT_FRONT_LEG_PIN,
+    // Init参数顺序: left_rear_leg, left_front_leg, right_front_leg, right_rear_leg
+    dog_.Init(LEFT_REAR_LEG_PIN, LEFT_FRONT_LEG_PIN, RIGHT_FRONT_LEG_PIN,
               RIGHT_REAR_LEG_PIN);
     ESP_LOGI(TAG, "Dog机器人初始化");
     action_queue_ = xQueueCreate(10, sizeof(DogActionParams));
@@ -253,7 +253,7 @@ public:
           settings.SetInt("left_rear_leg", left_rear_leg);
           settings.SetInt("right_rear_leg", right_rear_leg);
 
-          dog_.SetTrims(left_front_leg, right_front_leg, left_rear_leg,
+          dog_.SetTrims(left_rear_leg, left_front_leg, right_front_leg,
                         right_rear_leg);
           dog_.Home();
           return "OK";

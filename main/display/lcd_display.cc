@@ -521,6 +521,9 @@ void LcdDisplay::SetupUI() {
 #endif
 void LcdDisplay::SetChatMessage(const char *role, const char *content) {
   DisplayLockGuard lock(this);
+  if (!subtitles_visible_) {
+    return;
+  }
   if (content_ == nullptr) {
     return;
   }
@@ -989,9 +992,51 @@ void LcdDisplay::SetChatMessage(const char *role, const char *content) {
   if (chat_message_label_ == nullptr) {
     return;
   }
-  lv_label_set_text(chat_message_label_, content);
+  if (!subtitles_visible_) {
+    lv_label_set_text(chat_message_label_, content == nullptr ? "" : content);
+    lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+    return;
+  }
+  lv_label_set_text(chat_message_label_, content == nullptr ? "" : content);
 }
 #endif
+
+void LcdDisplay::SetStatusBarVisible(bool visible) {
+  Display::SetStatusBarVisible(visible);
+  if (status_bar_ == nullptr) {
+    return;
+  }
+  DisplayLockGuard lock(this);
+  if (visible) {
+    lv_obj_remove_flag(status_bar_, LV_OBJ_FLAG_HIDDEN);
+  } else {
+    lv_obj_add_flag(status_bar_, LV_OBJ_FLAG_HIDDEN);
+  }
+}
+
+void LcdDisplay::SetSubtitlesVisible(bool visible) {
+  Display::SetSubtitlesVisible(visible);
+  DisplayLockGuard lock(this);
+#if CONFIG_USE_WECHAT_MESSAGE_STYLE
+  if (content_ == nullptr) {
+    return;
+  }
+  if (visible) {
+    lv_obj_remove_flag(content_, LV_OBJ_FLAG_HIDDEN);
+  } else {
+    lv_obj_add_flag(content_, LV_OBJ_FLAG_HIDDEN);
+  }
+#else
+  if (chat_message_label_ == nullptr) {
+    return;
+  }
+  if (visible) {
+    lv_obj_remove_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+  } else {
+    lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+  }
+#endif
+}
 
 void LcdDisplay::SetEmotion(const char *emotion) {
   // Stop any running GIF animation

@@ -39,6 +39,8 @@ public:
 
     // 重写主题设置方法 - 矢量眼睛使用固定风格
     virtual void SetTheme(Theme* theme) override;
+    virtual void SetStatusBarVisible(bool visible) override;
+    virtual void SetSubtitlesVisible(bool visible) override;
 
     /**
      * @brief 手动触发眨眼

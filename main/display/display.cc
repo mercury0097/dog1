@@ -58,3 +58,11 @@ void Display::SetPowerSaveMode(bool on) {
 void Display::SetPetEmoji(const char* emoji) {
     ESP_LOGW(TAG, "SetPetEmoji: %s", emoji);
 }
+
+void Display::SetStatusBarVisible(bool visible) {
+    status_bar_visible_ = visible;
+}
+
+void Display::SetSubtitlesVisible(bool visible) {
+    subtitles_visible_ = visible;
+}

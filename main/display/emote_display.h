@@ -67,6 +67,8 @@ public:
     virtual void UpdateStatusBar(bool update_all = false) override;
     virtual void SetPowerSaveMode(bool on) override;
     virtual void SetPreviewImage(const void* image);
+    virtual void SetStatusBarVisible(bool visible) override;
+    virtual void SetSubtitlesVisible(bool visible) override;
 
     void AddEmojiData(const std::string &name, const void* data, size_t size, uint8_t fps = 0, bool loop = false, bool lack = false);
     void AddIconData(const std::string &name, const void* data, size_t size);

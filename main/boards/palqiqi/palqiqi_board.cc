@@ -93,6 +93,9 @@ private:
             DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y, DISPLAY_SWAP_XY);
         ESP_LOGI(TAG, "使用GIF表情显示模式");
 #endif
+
+        display_->SetStatusBarVisible(false);
+        display_->SetSubtitlesVisible(false);
     }
 
     void InitializeButtons() {

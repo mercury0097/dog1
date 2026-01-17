@@ -49,6 +49,8 @@ public:
     virtual void SetChatMessage(const char* role, const char* content) override; 
     virtual void SetPreviewImage(std::unique_ptr<LvglImage> image) override;
     virtual void SetPetEmoji(const char* emoji) override;
+    virtual void SetStatusBarVisible(bool visible) override;
+    virtual void SetSubtitlesVisible(bool visible) override;
 
     // Add theme switching function
     virtual void SetTheme(Theme* theme) override;

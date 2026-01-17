@@ -40,6 +40,11 @@ public:
     virtual void UpdateStatusBar(bool update_all = false);
     virtual void SetPowerSaveMode(bool on);
     virtual void SetPetEmoji(const char* emoji);
+    virtual void SetStatusBarVisible(bool visible);
+    virtual void SetSubtitlesVisible(bool visible);
+
+    bool StatusBarVisible() const { return status_bar_visible_; }
+    bool SubtitlesVisible() const { return subtitles_visible_; }
 
     inline int width() const { return width_; }
     inline int height() const { return height_; }
@@ -49,6 +54,8 @@ protected:
     int height_ = 0;
 
     Theme* current_theme_ = nullptr;
+    bool status_bar_visible_ = true;
+    bool subtitles_visible_ = true;
 
     friend class DisplayLockGuard;
     virtual bool Lock(int timeout_ms = 0) = 0;

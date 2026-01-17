@@ -124,6 +124,16 @@ void OledDisplay::SetChatMessage(const char* role, const char* content) {
     std::string content_str = content;
     std::replace(content_str.begin(), content_str.end(), '\n', ' ');
 
+    if (!subtitles_visible_) {
+        lv_label_set_text(chat_message_label_, content_str.c_str());
+        if (content_right_ != nullptr) {
+            lv_obj_add_flag(content_right_, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+        }
+        return;
+    }
+
     if (content_right_ == nullptr) {
         lv_label_set_text(chat_message_label_, content_str.c_str());
     } else {
@@ -358,4 +368,36 @@ void OledDisplay::SetTheme(Theme* theme) {
 
     auto screen = lv_screen_active();
     lv_obj_set_style_text_font(screen, text_font, 0);
+}
+
+void OledDisplay::SetStatusBarVisible(bool visible) {
+    Display::SetStatusBarVisible(visible);
+    if (status_bar_ == nullptr) {
+        return;
+    }
+    DisplayLockGuard lock(this);
+    if (visible) {
+        lv_obj_remove_flag(status_bar_, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(status_bar_, LV_OBJ_FLAG_HIDDEN);
+    }
+}
+
+void OledDisplay::SetSubtitlesVisible(bool visible) {
+    Display::SetSubtitlesVisible(visible);
+    DisplayLockGuard lock(this);
+    if (content_right_ != nullptr) {
+        if (visible) {
+            lv_obj_remove_flag(content_right_, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_add_flag(content_right_, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+    if (chat_message_label_ != nullptr) {
+        if (visible) {
+            lv_obj_remove_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_add_flag(chat_message_label_, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
 }

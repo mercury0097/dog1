@@ -420,7 +420,11 @@ void EmoteDisplay::SetChatMessage(const char* const role, const char* const cont
     DisplayLockGuard lock(this);
     if (content && strlen(content) > 0) {
         gfx_label_set_text(g_obj_label_toast, content);
-        SetUIDisplayMode(UIDisplayMode::SHOW_TIPS, this);
+        if (subtitles_visible_) {
+            SetUIDisplayMode(UIDisplayMode::SHOW_TIPS, this);
+        } else {
+            gfx_obj_set_visible(g_obj_label_toast, false);
+        }
     }
 }
 
@@ -454,6 +458,14 @@ void EmoteDisplay::SetStatus(const char* const status)
 
     if (std::strcmp(status, Lang::Strings::CONNECTING) != 0) {
         gfx_label_set_text(g_obj_label_toast, status);
+        if (subtitles_visible_) {
+            gfx_obj_set_visible(g_obj_label_toast, true);
+        } else {
+            gfx_obj_set_visible(g_obj_label_toast, false);
+        }
+    }
+    if (!subtitles_visible_) {
+        gfx_obj_set_visible(g_obj_label_toast, false);
     }
 }
 
@@ -466,7 +478,11 @@ void EmoteDisplay::ShowNotification(const char* notification, int duration_ms)
 
     DisplayLockGuard lock(this);
     gfx_label_set_text(g_obj_label_toast, notification);
-    SetUIDisplayMode(UIDisplayMode::SHOW_TIPS, this);
+    if (subtitles_visible_) {
+        SetUIDisplayMode(UIDisplayMode::SHOW_TIPS, this);
+    } else {
+        gfx_obj_set_visible(g_obj_label_toast, false);
+    }
 }
 
 void EmoteDisplay::UpdateStatusBar(bool update_all)
@@ -507,6 +523,30 @@ void EmoteDisplay::SetPowerSaveMode(bool on)
         gfx_anim_stop(g_obj_anim_eye);
     } else {
         gfx_anim_start(g_obj_anim_eye);
+    }
+}
+
+void EmoteDisplay::SetStatusBarVisible(bool visible)
+{
+    Display::SetStatusBarVisible(visible);
+    if (!engine_) {
+        return;
+    }
+    DisplayLockGuard lock(this);
+    if (g_obj_img_status) {
+        gfx_obj_set_visible(g_obj_img_status, visible);
+    }
+}
+
+void EmoteDisplay::SetSubtitlesVisible(bool visible)
+{
+    Display::SetSubtitlesVisible(visible);
+    if (!engine_) {
+        return;
+    }
+    DisplayLockGuard lock(this);
+    if (g_obj_label_toast) {
+        gfx_obj_set_visible(g_obj_label_toast, visible);
     }
 }
 
